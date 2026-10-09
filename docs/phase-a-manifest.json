@@ -1,0 +1,208 @@
+{
+  "preservedFiles": [
+    {
+      "sourceSha256": "a152dc2a53a85ef6e00c50d6fdcf905ec4991ddd6906eff056a47c2f3a1e9de6",
+      "transform": "asset-namespace-only",
+      "target": "src/components/professional-services/ProfessionalServicesLanding.tsx",
+      "targetSha256": "451c0b581471655f27bd25b7e60b1f3ab403e8ff5cf9194bc09090bfdde0237a",
+      "source": "src/components/professional-services/ProfessionalServicesLanding.tsx"
+    },
+    {
+      "sourceSha256": "3b28cd6d887eb59d57fcb2fbe7eeff1abeafb9809f9a1852109c5b49a439508b",
+      "transform": "exact",
+      "target": "src/components/professional-services/professional-services.css",
+      "targetSha256": "3b28cd6d887eb59d57fcb2fbe7eeff1abeafb9809f9a1852109c5b49a439508b",
+      "source": "src/components/professional-services/professional-services.css"
+    },
+    {
+      "sourceSha256": "770b4140bbb581e2dfd9ea9946ffc9c75a1d86ba7d2db5f77c83e37cbdf9d808",
+      "transform": "exact",
+      "target": "tsconfig.json",
+      "targetSha256": "770b4140bbb581e2dfd9ea9946ffc9c75a1d86ba7d2db5f77c83e37cbdf9d808",
+      "source": "tsconfig.json"
+    },
+    {
+      "sourceSha256": "8e5d12ba330e7d86409edec74b95451e0db22ee09b9426c94b5bf817571eddb0",
+      "transform": "exact",
+      "target": "tsconfig.app.json",
+      "targetSha256": "8e5d12ba330e7d86409edec74b95451e0db22ee09b9426c94b5bf817571eddb0",
+      "source": "tsconfig.app.json"
+    },
+    {
+      "sourceSha256": "d366cc0827139db39c61815f22491bbfda56c654354a42ad7795143d314e45e8",
+      "transform": "exact",
+      "target": "tsconfig.node.json",
+      "targetSha256": "d366cc0827139db39c61815f22491bbfda56c654354a42ad7795143d314e45e8",
+      "source": "tsconfig.node.json"
+    },
+    {
+      "sourceSha256": "b4d344818a1e1bf43997e4744a9153c8eef770c98b58229cd86363dabb85ded4",
+      "transform": "exact",
+      "target": ".oxlintrc.json",
+      "targetSha256": "b4d344818a1e1bf43997e4744a9153c8eef770c98b58229cd86363dabb85ded4",
+      "source": ".oxlintrc.json"
+    }
+  ],
+  "html": {
+    "sourceSha256": "bba88f1c9d42269bf4cfa126ba93ba0ed19c96134c7df872829c0e021db19ad4",
+    "target": "index.html",
+    "targetSha256": "82ed90d20f6a48a1423c5002940b5486c95ed1365d79407387413d5c423bf658",
+    "source": "servicios-profesionales.html"
+  },
+  "schemaVersion": 1,
+  "sourceInputs": [
+    {
+      "path": "src/components/professional-services/ProfessionalServicesLanding.tsx",
+      "sha256": "a152dc2a53a85ef6e00c50d6fdcf905ec4991ddd6906eff056a47c2f3a1e9de6"
+    },
+    {
+      "path": "src/components/professional-services/professional-services.css",
+      "sha256": "3b28cd6d887eb59d57fcb2fbe7eeff1abeafb9809f9a1852109c5b49a439508b"
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "770b4140bbb581e2dfd9ea9946ffc9c75a1d86ba7d2db5f77c83e37cbdf9d808"
+    },
+    {
+      "path": "tsconfig.app.json",
+      "sha256": "8e5d12ba330e7d86409edec74b95451e0db22ee09b9426c94b5bf817571eddb0"
+    },
+    {
+      "path": "tsconfig.node.json",
+      "sha256": "d366cc0827139db39c61815f22491bbfda56c654354a42ad7795143d314e45e8"
+    },
+    {
+      "path": ".oxlintrc.json",
+      "sha256": "b4d344818a1e1bf43997e4744a9153c8eef770c98b58229cd86363dabb85ded4"
+    },
+    {
+      "path": "src/index.css",
+      "sha256": "de97588962e5eed8b5df1f5601781b6e7545873c1d2d3c7bd54f9c5c7546b981"
+    },
+    {
+      "path": "servicios-profesionales.html",
+      "sha256": "bba88f1c9d42269bf4cfa126ba93ba0ed19c96134c7df872829c0e021db19ad4"
+    },
+    {
+      "path": "public/professional-services/jota-growth-partner-logo.png",
+      "sha256": "cd34dbed50725fd3e0b20c0363211f529877a7e308144a5dc59897a68b82cd72"
+    },
+    {
+      "path": "public/professional-services/professional-presence-portrait.png",
+      "sha256": "5f90838fdf8c6798c85255faa36515df17449593e617f6e2fa63595bd28814f8"
+    },
+    {
+      "path": "public/professional-services/recognition-editorial-studio.png",
+      "sha256": "5f340e3190be6f6761ce05934f905553cd29c3d7fd5131aeecf9d7f3ef7facd1"
+    },
+    {
+      "path": "public/professional-services/own-center/desktop.mp4",
+      "sha256": "3a918acd09406fadbcc81a19ec07fd4e6738a60c3770f5f6c66c46975f58f081"
+    },
+    {
+      "path": "public/professional-services/own-center/mobile.mp4",
+      "sha256": "fde7887f7708b41c28eab3b93197f0b965f55db52bee003c75e429b508c5de11"
+    },
+    {
+      "path": "public/professional-services/own-center/desktop-7.30.png",
+      "sha256": "08209f1c7252575b046be53ee999318769a7fbd38f1da72c7cb3aa87255be0e6"
+    },
+    {
+      "path": "public/professional-services/own-center/mobile-7.30.png",
+      "sha256": "7582dfa12f736a014b2aa821c0105a74af169cf1f3303d3ed652b90cbb7b744a"
+    },
+    {
+      "path": "public/favicon.svg",
+      "sha256": "61bc9a161de58248288e6905425d7180f0624c2865007b97d763fdac12043a66"
+    },
+    {
+      "path": "public/agents/jota-ochoa-preview-card.png",
+      "sha256": "7af3e8bb2d8d57a073414506267ef27c0d1a1e00b4f390c5c208063f0f58dbdc"
+    }
+  ],
+  "phase": "A",
+  "baseline": {
+    "ranges": [
+      [
+        1,
+        29
+      ],
+      [
+        64,
+        78
+      ],
+      [
+        452,
+        459
+      ]
+    ],
+    "target": "src/index.css",
+    "source": "src/index.css",
+    "sha256": "0cbd21b5cb91e1cf48ccf2fe68626e7f5c62aa58d23ff569f96a20955af93277"
+  },
+  "assets": [
+    {
+      "bytes": 130611,
+      "runtime": true,
+      "target": "public/agentejota-profesionales/jota-growth-partner-logo.png",
+      "source": "public/professional-services/jota-growth-partner-logo.png",
+      "sha256": "cd34dbed50725fd3e0b20c0363211f529877a7e308144a5dc59897a68b82cd72"
+    },
+    {
+      "bytes": 1922931,
+      "runtime": true,
+      "target": "public/agentejota-profesionales/professional-presence-portrait.png",
+      "source": "public/professional-services/professional-presence-portrait.png",
+      "sha256": "5f90838fdf8c6798c85255faa36515df17449593e617f6e2fa63595bd28814f8"
+    },
+    {
+      "bytes": 1658112,
+      "runtime": true,
+      "target": "public/agentejota-profesionales/recognition-editorial-studio.png",
+      "source": "public/professional-services/recognition-editorial-studio.png",
+      "sha256": "5f340e3190be6f6761ce05934f905553cd29c3d7fd5131aeecf9d7f3ef7facd1"
+    },
+    {
+      "bytes": 274325,
+      "runtime": true,
+      "target": "public/agentejota-profesionales/own-center/desktop.mp4",
+      "source": "public/professional-services/own-center/desktop.mp4",
+      "sha256": "3a918acd09406fadbcc81a19ec07fd4e6738a60c3770f5f6c66c46975f58f081"
+    },
+    {
+      "bytes": 257935,
+      "runtime": true,
+      "target": "public/agentejota-profesionales/own-center/mobile.mp4",
+      "source": "public/professional-services/own-center/mobile.mp4",
+      "sha256": "fde7887f7708b41c28eab3b93197f0b965f55db52bee003c75e429b508c5de11"
+    },
+    {
+      "bytes": 106397,
+      "runtime": true,
+      "target": "public/agentejota-profesionales/own-center/desktop-7.30.png",
+      "source": "public/professional-services/own-center/desktop-7.30.png",
+      "sha256": "08209f1c7252575b046be53ee999318769a7fbd38f1da72c7cb3aa87255be0e6"
+    },
+    {
+      "bytes": 112520,
+      "runtime": true,
+      "target": "public/agentejota-profesionales/own-center/mobile-7.30.png",
+      "source": "public/professional-services/own-center/mobile-7.30.png",
+      "sha256": "7582dfa12f736a014b2aa821c0105a74af169cf1f3303d3ed652b90cbb7b744a"
+    },
+    {
+      "bytes": 9522,
+      "runtime": false,
+      "target": "public/agentejota-profesionales/favicon.svg",
+      "source": "public/favicon.svg",
+      "sha256": "61bc9a161de58248288e6905425d7180f0624c2865007b97d763fdac12043a66"
+    },
+    {
+      "bytes": 162600,
+      "runtime": false,
+      "target": "public/agentejota-profesionales/jota-ochoa-preview-card.png",
+      "source": "public/agents/jota-ochoa-preview-card.png",
+      "sha256": "7af3e8bb2d8d57a073414506267ef27c0d1a1e00b4f390c5c208063f0f58dbdc"
+    }
+  ]
+}
