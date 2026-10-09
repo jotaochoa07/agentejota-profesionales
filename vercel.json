@@ -1,0 +1,20 @@
+{
+  "rewrites": [
+    {
+      "source": "/servicios-profesionales",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/servicios-profesionales/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/servicios-profesionales/assets/:path*",
+      "destination": "/assets/:path*"
+    },
+    {
+      "source": "/servicios-profesionales/agentejota-profesionales/:path*",
+      "destination": "/agentejota-profesionales/:path*"
+    }
+  ]
+}

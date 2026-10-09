@@ -3,7 +3,8 @@ import './professional-services.css';
 
 const WHATSAPP_NUMBER = '573011360508';
 const FORM_ID = 'professional-services-form';
-const OWN_CENTER_ASSET_PATH = '/agentejota-profesionales/own-center';
+const ASSET_BASE_PATH = `${import.meta.env.BASE_URL}agentejota-profesionales`;
+const OWN_CENTER_ASSET_PATH = `${ASSET_BASE_PATH}/own-center`;
 
 type SectionMediaPreferences = { isMobile: boolean; prefersReducedMotion: boolean };
 
@@ -221,7 +222,7 @@ const ProfessionalSpecimen: React.FC = () => {
         <a className="ps-advance-link" href="#professional-services-convergence">Ver cómo se conecta todo <span aria-hidden="true">↓</span></a>
       </div>
     </div>
-    <div className="ps-portrait-frame" role="img" aria-label="Retrato artístico de una profesional, parcialmente de perfil y en luz tenue"><img className="ps-portrait-presence" src="/agentejota-profesionales/professional-presence-portrait.png" alt="" fetchPriority="high" /><img className="ps-portrait-shoulder" src="/agentejota-profesionales/professional-presence-portrait.png" alt="" /><img className="ps-portrait-identity" src="/agentejota-profesionales/professional-presence-portrait.png" alt="" /><img className="ps-portrait-gaze" src="/agentejota-profesionales/professional-presence-portrait.png" alt="" /></div>
+    <div className="ps-portrait-frame" role="img" aria-label="Retrato artístico de una profesional, parcialmente de perfil y en luz tenue"><img className="ps-portrait-presence" src={`${ASSET_BASE_PATH}/professional-presence-portrait.png`} alt="" fetchPriority="high" /><img className="ps-portrait-shoulder" src={`${ASSET_BASE_PATH}/professional-presence-portrait.png`} alt="" /><img className="ps-portrait-identity" src={`${ASSET_BASE_PATH}/professional-presence-portrait.png`} alt="" /><img className="ps-portrait-gaze" src={`${ASSET_BASE_PATH}/professional-presence-portrait.png`} alt="" /></div>
     <div className="ps-hero-wash" aria-hidden="true" />
   </section>;
 };
@@ -359,7 +360,7 @@ const ProfessionalServicesForm: React.FC = () => {
       <p className="professional-services-form-note" id="professional-services-form-explanation">WhatsApp abrirá un borrador editable para que lo revises antes de enviarlo.</p>
     </div>
     <div className="ps-recognition-cover" aria-label="Composición editorial personalizada">
-      <img className="ps-recognition-cover-image" src="/agentejota-profesionales/recognition-editorial-studio.png" alt="" aria-hidden="true" />
+      <img className="ps-recognition-cover-image" src={`${ASSET_BASE_PATH}/recognition-editorial-studio.png`} alt="" aria-hidden="true" />
       <div className="ps-recognition-cover-wash" aria-hidden="true" />
       <div className="ps-recognition-cover-masthead">
         <p className="ps-recognition-cover-brand">BRAND</p>
@@ -390,7 +391,7 @@ const ProfessionalServicesForm: React.FC = () => {
 
 export const ProfessionalServicesLanding: React.FC = () => {
   return <div className="professional-services-page">
-    <header className="professional-services-header professional-services-container"><a className="professional-services-brand" href="/" aria-label="Jota Growth Partner, inicio"><img src="/agentejota-profesionales/jota-growth-partner-logo.png" alt="Jota Growth Partner" /></a><nav aria-label="Navegación principal"><a href={`#${FORM_ID}`} onClick={goToForm}><svg className="ps-whatsapp-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M16 3.5a12.5 12.5 0 0 0-10.7 18.96L3.5 28.5l6.2-1.63A12.5 12.5 0 1 0 16 3.5Z" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinejoin="round" /><path d="M10.1 8.8c-.4 0-.8.2-1.1.5-.4.4-1.5 1.5-1.5 3.6s1.5 4.2 1.7 4.5c.2.3 2.8 4.5 6.9 6.1.8.3 1.5.5 2 .6.8.2 1.6.2 2.2.1.7-.1 2.1-.8 2.4-1.7.3-.8.3-1.5.2-1.7-.1-.2-.4-.3-.8-.5-.4-.2-2.1-1.1-2.5-1.2-.4-.1-.6-.2-.9.3-.3.4-1 1.1-1.2 1.4-.2.2-.4.3-.8.1-.4-.2-1.7-.6-3.1-1.9-1.1-1-1.9-2.3-2.1-2.7-.2-.4 0-.6.2-.8.2-.2.4-.4.6-.7.2-.3.3-.4.4-.7.1-.3.1-.5 0-.7l-.7-1.4c-.2-.5-.4-1.1-.7-1.1h-.6Z" fill="currentColor" /></svg><span>Hablemos</span></a></nav></header>
+    <header className="professional-services-header professional-services-container"><a className="professional-services-brand" href={import.meta.env.BASE_URL} aria-label="Jota Growth Partner, inicio"><img src={`${ASSET_BASE_PATH}/jota-growth-partner-logo.png`} alt="Jota Growth Partner" /></a><nav aria-label="Navegación principal"><a href={`#${FORM_ID}`} onClick={goToForm}><svg className="ps-whatsapp-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M16 3.5a12.5 12.5 0 0 0-10.7 18.96L3.5 28.5l6.2-1.63A12.5 12.5 0 1 0 16 3.5Z" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinejoin="round" /><path d="M10.1 8.8c-.4 0-.8.2-1.1.5-.4.4-1.5 1.5-1.5 3.6s1.5 4.2 1.7 4.5c.2.3 2.8 4.5 6.9 6.1.8.3 1.5.5 2 .6.8.2 1.6.2 2.2.1.7-.1 2.1-.8 2.4-1.7.3-.8.3-1.5.2-1.7-.1-.2-.4-.3-.8-.5-.4-.2-2.1-1.1-2.5-1.2-.4-.1-.6-.2-.9.3-.3.4-1 1.1-1.2 1.4-.2.2-.4.3-.8.1-.4-.2-1.7-.6-3.1-1.9-1.1-1-1.9-2.3-2.1-2.7-.2-.4 0-.6.2-.8.2-.2.4-.4.6-.7.2-.3.3-.4.4-.7.1-.3.1-.5 0-.7l-.7-1.4c-.2-.5-.4-1.1-.7-1.1h-.6Z" fill="currentColor" /></svg><span>Hablemos</span></a></nav></header>
     <main>
       <ProfessionalSpecimen />
       <section className="professional-services-convergence" id="professional-services-convergence" aria-labelledby="professional-services-convergence-title"><div className="professional-services-container"><h2 id="professional-services-convergence-title" className="ps-visually-hidden">Todo lo que ya construiste, conectado en un solo lugar</h2><p className="ps-visually-hidden">Tus canales siguen siendo tuyos. Tu web les da un centro propio.</p><p className="ps-visually-hidden">Google, Instagram, WhatsApp, Agenda, Calendly y Facebook convergen en tu nombre, tu dominio y tu web.</p><ProfessionalServicesMotion /></div></section>
