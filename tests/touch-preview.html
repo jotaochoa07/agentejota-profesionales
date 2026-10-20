@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Local-only simulated touch verification</title></head><body><div id="root"></div>
+<script type="module">
+import React, { useEffect, useRef, useState } from 'react';
+import { createRoot } from 'react-dom/client';
+import '/src/index.css';
+import { ProfessionalServicesLanding } from '/src/components/professional-services/ProfessionalServicesLanding.tsx';
+
+function TouchControls() {
+ const [status, setStatus] = useState('Sin interacción');
+ const timer = useRef(null);
+ useEffect(() => () => { if (timer.current !== null) clearTimeout(timer.current); }, []);
+ const coarse = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+ const dispatch = (type, move = false) => {
+  const hero = document.querySelector('.professional-services-hero');
+  const frame = hero?.querySelector('.ps-portrait-frame');
+  if (!hero || !frame) { setStatus('El retrato aún no está listo'); return; }
+  if (timer.current !== null) clearTimeout(timer.current);
+  const rect = frame.getBoundingClientRect();
+  hero.dispatchEvent(new PointerEvent(type, { bubbles: true, pointerId: 71, pointerType: 'touch', isPrimary: true, buttons: 0, clientX: rect.left + rect.width * (move ? .55 : .42), clientY: rect.top + rect.height * .29 }));
+  const read = () => setStatus(`identity=${hero.style.getPropertyValue('--reveal-identity')}; x=${hero.style.getPropertyValue('--light-x')}; used=${hero.dataset.revealUsed}; active=${hero.dataset.revealActive}`);
+  read();
+  if (type === 'pointerup' || type === 'pointercancel') timer.current = setTimeout(read, 950);
+ };
+ return React.createElement('aside', { style: { position: 'fi' + 'xed', bottom: 0, left: 0, zIndex: 9999, background: '#fff', color: '#111', padding: 10, font: '14px sans-serif', maxWidth: '100%' } },
+  React.createElement('strong', null, `Prueba local · Pointer Events simulados, no tacto físico · coarse: ${coarse ? 'sí' : 'no'}`),
+  React.createElement('br'),
+  React.createElement('button', { onClick: () => dispatch('pointerdown') }, 'Simular primer toque'), ' ',
+  React.createElement('button', { onClick: () => dispatch('pointermove', true) }, 'Mover suavemente'), ' ',
+  React.createElement('button', { onClick: () => dispatch('pointercancel') }, 'Simular scroll / cancelar'), ' ',
+  React.createElement('button', { onClick: () => dispatch('pointerup') }, 'Soltar'),
+  React.createElement('output', { id: 'status', 'aria-live': 'polite' }, status));
+}
+createRoot(document.getElementById('root')).render(React.createElement(React.Fragment, null,
+ React.createElement(ProfessionalServicesLanding), React.createElement(TouchControls)));
+</script></body></html>

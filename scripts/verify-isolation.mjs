@@ -39,15 +39,59 @@ for (const asset of manifest.assets) {
   assert.equal(hash(bytes), asset.sha256, asset.target);
   assert(bytes.length < 10 * 1024 * 1024, 'Oversized blob: ' + asset.target);
 }
+// Preserve Phase A evidence and compare the final refinement against the deployed Phase D source.
+const refinementCommit = 'a224d608a6100a8b2eb1eb83abb2c6a35c92dcb3';
+const refinementSource = (path) => execFileSync('git', ['show', `${refinementCommit}:${path}`], { cwd: root });
+const normalizeLines = (value) => value.replaceAll('\r\n', '\n');
+const section = (value, start, end) => value.slice(value.indexOf(start), value.indexOf(end));
+const validateRefinedTsx = (value, baseline) => {
+  const heroContent = '<div className="ps-hero-copy">';
+  assert.equal(normalizeLines(section(value, heroContent, '    <span className="ps-reveal-hint"')),
+    normalizeLines(section(baseline, heroContent, '    <div className="ps-hero-wash"')),
+    'Approved hero copy, portrait, layout and title motion must remain unchanged');
+  const processStart = '<div className="professional-services-container professional-services-trust-grid">';
+  const oldPortfolio = '<a className="professional-services-text-link" href="https://www.agentejota.com/">Conoce nuestro portafolio <span aria-hidden="true">↗</span></a>';
+  assert.equal(normalizeLines(section(value, processStart, '        </ol>')),
+    normalizeLines(section(baseline, processStart, '        </ol>').replace(oldPortfolio, '')),
+    'Process headings, copy, steps and narrative position must remain unchanged');
+  const presentationInsertion = '      <ProfessionalServicesPresentation />\n';
+  assert.equal((value.match(/<ProfessionalServicesPresentation \/>/g) ?? []).length, 1, 'Exactly one presentation component is permitted');
+  assert(value.includes(presentationInsertion + '      <ProfessionalServicesBenefits />'), 'The independent video must immediately precede benefits');
+  assert(section(value, 'const ProfessionalServicesPresentation:', 'const ProfessionalServicesProcess:').includes('id="professional-services-presentation"'), 'Presentation must own its separate video section');
+  assert.equal((value.match(/className="professional-services-video-frame ps-presentation-video"/g) ?? []).length, 1, 'Exactly one presentation frame is permitted');
+  assert(value.includes('src="https://www.youtube.com/embed/xRJkmFE9w9w"'));
+  assert(!value.includes('Conoce nuestro portafolio'));
+  assert(!/preventDefault\(\)|setPointerCapture\(/.test(section(value, 'const ProfessionalSpecimen:', 'type ProfessionalBenefit =')),
+    'Reveal must not capture or cancel native scrolling');
+  let restored = value;
+  for (const [start, end] of [
+    ['const ProfessionalSpecimen:', 'type ProfessionalBenefit ='],
+  ]) restored = restored.replace(section(restored, start, end), section(baseline, start, end));
+  restored = restored.replace(section(restored, 'const ProfessionalServicesPresentation:', 'const ProfessionalServicesForm:'),
+    section(baseline, 'const ProfessionalServicesProcess:', 'const ProfessionalServicesForm:'));
+  restored = restored.replace(presentationInsertion, '');
+  assert.equal(restored, baseline, 'Changes outside the authorized reveal and video/portfolio scopes');
+};
 for (const file of manifest.preservedFiles) {
+  const historical = approved(file.target);
+  assert.equal(hash(historical), file.targetSha256, 'Approved source differs from historical manifest');
   if (file.target.endsWith('.tsx')) {
-    const baseline = approved(file.target);
-    assert.equal(hash(baseline), file.targetSha256, 'Approved source differs from historical manifest');
-    assert.deepEqual(read(file.target), Buffer.from(migrateTsx(baseline.toString('utf8'))),
-      'Only the approved asset-prefix and home-link migration is permitted');
-  } else {
-    assert.equal(hash(read(file.target)), file.targetSha256, file.target);
-  }
+    const baseline = refinementSource(file.target).toString('utf8');
+    assert.equal(baseline, migrateTsx(historical.toString('utf8')), 'Deployed baseline must match the authorized prefix migration');
+    validateRefinedTsx(text(file.target), baseline);
+  } else if (file.target.endsWith('professional-services.css')) {
+    const baseline = refinementSource(file.target);
+    assert.equal(hash(baseline), file.targetSha256, 'Deployed CSS must match the historical manifest');
+    const value = read(file.target);
+    assert.deepEqual(value.subarray(0, baseline.length), baseline, 'Existing styles must remain byte-identical');
+    const delta = value.subarray(baseline.length).toString('utf8');
+    assert(delta.startsWith('\n/* Authorized final touch reveal and presentation video refinement. */\n'));
+    assert(!/@import|url\(|touch-action|ps-hero-copy|ps-title-|ps-benefit-|ps-recognition-|ps-own-center/.test(delta), 'Out-of-scope CSS refinement');
+    assert(!/\.(?:professional-services-hero|ps-portrait-[a-z-]+|has-static-portrait)[^{]*\{[^}]*\b(?:width|height|min-height|max-width|position|top|right|left|bottom|padding|margin|font(?:-size)?|line-height)\s*:/.test(delta), 'Refinement must not override approved hero geometry or typography');
+    const selectors = delta.split('\n').filter((line) => line.startsWith('.'));
+    assert(selectors.length > 0);
+    for (const selector of selectors) assert(/^\.professional-services-page (?:\[data-reveal-used="true"\]|\.(?:ps-reveal-|professional-services-hero|has-static-portrait|professional-services-video-frame\.ps-presentation-video|ps-presentation-))/.test(selector), 'Unscoped CSS delta: ' + selector);
+  } else assert.equal(hash(read(file.target)), file.targetSha256, file.target);
 }
 assert.equal(hash(read('src/index.css')), manifest.baseline.sha256);
 const approvedHtml = approved('index.html');
@@ -128,7 +172,9 @@ if (sourceFlag !== -1) {
       bytes = Buffer.from(bytes.toString('utf8').replaceAll('/professional-services/', '/agentejota-profesionales/'));
     }
     if (file.target.endsWith('.tsx')) bytes = Buffer.from(migrateTsx(bytes.toString('utf8')));
-    assert.deepEqual(read(file.target), bytes, file.target + ' exact source parity plus authorized prefix migration');
+    if (file.target.endsWith('.tsx')) validateRefinedTsx(text(file.target), bytes.toString('utf8'));
+    else if (file.target.endsWith('professional-services.css')) assert.deepEqual(read(file.target).subarray(0, bytes.length), bytes);
+    else assert.deepEqual(read(file.target), bytes, file.target + ' exact source parity plus authorized prefix migration');
   }
   const lines = readFileSync(join(sourceRoot, 'src/index.css'), 'utf8').match(/[^\r\n]*(?:\r\n|\n|$)/g);
   const baseline = manifest.baseline.ranges.map(([start, end]) => lines.slice(start - 1, end).join('')).join('\n');
@@ -138,5 +184,5 @@ if (sourceFlag !== -1) {
     .replaceAll('https://agentejota.com/agents/jota-ochoa-preview-card.png', '/agentejota-profesionales/jota-ochoa-preview-card.png');
   assert.deepEqual(read('index.html'), Buffer.from(migrateHtml(sourceHtml)));
 }
-console.log('PASS: isolated imports, 9 unchanged namespaced assets, pinned dependencies, historical hashes, exact prefix migration, scoped child routing' +
+console.log('PASS: isolated imports, 9 unchanged namespaced assets, pinned dependencies, historical hashes, exact prefix migration, bounded touch/video refinement, scoped child routing' +
   (sourceFlag !== -1 ? '; source inputs unchanged and byte comparisons verified.' : '.'));

@@ -122,6 +122,9 @@ const ProfessionalSpecimen: React.FC = () => {
   const [commercialCopyRevealed, setCommercialCopyRevealed] = useState(false);
   const lightHistory = useRef<Array<{ x: string; y: string; time: number }>>([]);
   const trailTimer = useRef<number | null>(null);
+  const touchHoldTimer = useRef<number | null>(null);
+  const activeTouch = useRef<number | null>(null);
+  const staticPortrait = reducedMotion || typeof window.PointerEvent === 'undefined';
   useEffect(() => {
     const title = revealTitleRef.current;
     if (!title) return;
@@ -156,8 +159,12 @@ const ProfessionalSpecimen: React.FC = () => {
   }, []);
   useEffect(() => () => {
     if (trailTimer.current !== null) window.clearTimeout(trailTimer.current);
+    if (touchHoldTimer.current !== null) window.clearTimeout(touchHoldTimer.current);
   }, []);
   const setPenumbra = (hero: HTMLElement) => {
+    if (touchHoldTimer.current !== null) window.clearTimeout(touchHoldTimer.current);
+    touchHoldTimer.current = null;
+    hero.dataset.revealActive = 'false';
     if (trailTimer.current !== null) window.clearTimeout(trailTimer.current);
     trailTimer.current = null;
     lightHistory.current = [];
@@ -167,16 +174,15 @@ const ProfessionalSpecimen: React.FC = () => {
     hero.style.setProperty('--reveal-gaze', '0');
   };
   const updateReveal = (event: React.PointerEvent<HTMLElement>) => {
-    if (event.pointerType !== 'mouse' && event.buttons === 0) return;
     const isDesktopMouse = event.pointerType === 'mouse' && window.matchMedia('(min-width: 901px)').matches;
     const hero = event.currentTarget;
     const frame = hero.querySelector('.ps-portrait-frame');
-    if (!frame) return;
+    if (!frame) return false;
     const rect = frame.getBoundingClientRect();
     const insideFrame = event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom;
-    if (!insideFrame) {
-      setPenumbra(hero);
-      return;
+    if (!insideFrame || rect.width === 0 || rect.height === 0) {
+      if (event.pointerType === 'mouse') setPenumbra(hero);
+      return false;
     }
     const x = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
     const y = Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height));
@@ -206,9 +212,48 @@ const ProfessionalSpecimen: React.FC = () => {
     hero.style.setProperty('--reveal-shoulder', closeness(0.67, 0.75, 0.5).toFixed(2));
     hero.style.setProperty('--reveal-identity', '1');
     hero.style.setProperty('--reveal-gaze', (closeness(0.42, 0.29, 0.16) * 0.78).toFixed(2));
+    return true;
   };
-  const leaveReveal = (event: React.PointerEvent<HTMLElement>) => setPenumbra(event.currentTarget);
-  return <section className="professional-services-hero" aria-labelledby="professional-services-title" onPointerMove={updateReveal} onPointerDown={updateReveal} onPointerUp={(event) => { if (event.pointerType === 'touch') leaveReveal(event); }} onPointerCancel={leaveReveal} onPointerLeave={leaveReveal}>
+  const isInteractiveTarget = (event: React.PointerEvent<HTMLElement>) =>
+    Boolean((event.target as Element).closest('a, button, input, select, textarea, [role="button"]'));
+  const startReveal = (event: React.PointerEvent<HTMLElement>) => {
+    if (isInteractiveTarget(event) || (event.pointerType !== 'mouse' && (!event.isPrimary || activeTouch.current !== null))) return;
+    if (!updateReveal(event)) return;
+    if (event.pointerType !== 'mouse') {
+      activeTouch.current = event.pointerId;
+      if (touchHoldTimer.current !== null) window.clearTimeout(touchHoldTimer.current);
+      touchHoldTimer.current = null;
+      event.currentTarget.dataset.revealInput = 'touch';
+      event.currentTarget.dataset.revealActive = 'true';
+      event.currentTarget.dataset.revealUsed = 'true';
+    }
+  };
+  const moveReveal = (event: React.PointerEvent<HTMLElement>) => {
+    if (isInteractiveTarget(event)) return;
+    if (event.pointerType !== 'mouse' && activeTouch.current !== event.pointerId) return;
+    updateReveal(event);
+  };
+  const finishReveal = (event: React.PointerEvent<HTMLElement>) => {
+    if (event.pointerType === 'mouse' || activeTouch.current !== event.pointerId) return;
+    activeTouch.current = null;
+    const hero = event.currentTarget;
+    // Preserve the first glimpse when a short tap or native vertical scroll ends the pointer stream.
+    touchHoldTimer.current = window.setTimeout(() => setPenumbra(hero), 800);
+  };
+  const leaveReveal = (event: React.PointerEvent<HTMLElement>) => {
+    if (event.pointerType === 'mouse') setPenumbra(event.currentTarget);
+  };
+  const revealWithKeyboard = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const hero = event.currentTarget.closest<HTMLElement>('.professional-services-hero');
+    if (!hero) return;
+    if (touchHoldTimer.current !== null) window.clearTimeout(touchHoldTimer.current);
+    touchHoldTimer.current = null;
+    hero.style.setProperty('--light-x', '42%');
+    hero.style.setProperty('--light-y', '29%');
+    hero.style.setProperty('--reveal-identity', '1');
+    hero.style.setProperty('--reveal-gaze', '.78');
+  };
+  return <section className={`professional-services-hero${staticPortrait ? ' has-static-portrait' : ''}`} aria-labelledby="professional-services-title" onPointerMove={moveReveal} onPointerDown={startReveal} onPointerUp={finishReveal} onPointerCancel={finishReveal} onPointerLeave={leaveReveal}>
     <div className="ps-hero-copy">
       <h1 id="professional-services-title" aria-label="Tu marca personal no necesita inventarse. Necesita revelarse"><span className="ps-title-first"><span className="ps-title-first-line">Tu marca personal</span> <span className="ps-title-first-line">no necesita inventarse</span></span> <span ref={revealTitleRef} className={`ps-title-reveal ${titleRevealed ? 'is-visible' : 'is-pending'}`}>
         {['Necesita', 'revelarse'].map((word, wordIndex) => <React.Fragment key={word}>
@@ -223,6 +268,14 @@ const ProfessionalSpecimen: React.FC = () => {
       </div>
     </div>
     <div className="ps-portrait-frame" role="img" aria-label="Retrato artístico de una profesional, parcialmente de perfil y en luz tenue"><img className="ps-portrait-presence" src={`${ASSET_BASE_PATH}/professional-presence-portrait.png`} alt="" fetchPriority="high" /><img className="ps-portrait-shoulder" src={`${ASSET_BASE_PATH}/professional-presence-portrait.png`} alt="" /><img className="ps-portrait-identity" src={`${ASSET_BASE_PATH}/professional-presence-portrait.png`} alt="" /><img className="ps-portrait-gaze" src={`${ASSET_BASE_PATH}/professional-presence-portrait.png`} alt="" /></div>
+    <span className="ps-reveal-hint" aria-hidden="true">Desliza para revelar</span>
+    <button className="ps-reveal-keyboard" type="button" onClick={revealWithKeyboard} onBlur={(event) => {
+      const hero = event.currentTarget.closest<HTMLElement>('.professional-services-hero');
+      if (hero) setPenumbra(hero);
+    }} onKeyDown={(event) => {
+      const hero = event.currentTarget.closest<HTMLElement>('.professional-services-hero');
+      if (event.key === 'Escape' && hero) setPenumbra(hero);
+    }}>Revelar el retrato</button>
     <div className="ps-hero-wash" aria-hidden="true" />
   </section>;
 };
@@ -307,21 +360,29 @@ const ProfessionalServicesBenefits: React.FC = () => <section className="ps-bene
   </div>
 </section>;
 
+const ProfessionalServicesPresentation: React.FC = () => {
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  return <section className="ps-presentation-section" id="professional-services-presentation" aria-label="Tu experiencia merece una marca propia">
+    <div className="professional-services-video-frame ps-presentation-video">
+      {videoLoaded ? <iframe src="https://www.youtube.com/embed/xRJkmFE9w9w" title="Tu experiencia merece una marca propia — presentación de Jota" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" /> : <button className="professional-services-video-poster ps-presentation-play" type="button" aria-label="Reproducir Tu experiencia merece una marca propia en YouTube" onClick={() => setVideoLoaded(true)}>
+        <img className="ps-presentation-thumbnail" src="https://i.ytimg.com/vi/xRJkmFE9w9w/maxresdefault.jpg" alt="" loading="lazy" decoding="async" />
+        <span className="ps-presentation-play-label"><span aria-hidden="true">▶</span> Ver video</span>
+      </button>}
+    </div>
+  </section>;
+};
+
 const ProfessionalServicesProcess: React.FC = () => {
   const { ref, visible } = useScrollReveal(0.12);
   return <section ref={ref} className={`professional-services-section professional-services-trust ${visible ? 'is-visible' : 'is-pending'}`} aria-labelledby="video-title">
     <div className="professional-services-container professional-services-trust-grid">
-      <div className="ps-process-intro"><p className="professional-services-eyebrow">Diseñar empieza por entender</p><h2 id="video-title">Primero te escuchamos y luego diseñamos</h2><p className="professional-services-lead">Trabajamos directamente contigo. Antes de pensar en pantallas, entendemos tu trayectoria, qué te distingue y qué merece ocupar el centro.</p><a className="professional-services-text-link" href="https://www.agentejota.com/">Conoce nuestro portafolio <span aria-hidden="true">↗</span></a></div>
+      <div className="ps-process-intro"><p className="professional-services-eyebrow">Diseñar empieza por entender</p><h2 id="video-title">Primero te escuchamos y luego diseñamos</h2><p className="professional-services-lead">Trabajamos directamente contigo. Antes de pensar en pantallas, entendemos tu trayectoria, qué te distingue y qué merece ocupar el centro.</p></div>
       <div className="ps-process-story">
         <ol className="ps-process-steps" aria-label="Cómo empieza el trabajo">
           <li><span className="ps-process-index">01</span><div><h3>Escuchamos</h3><p>¿Qué haces? ¿Qué has construido? ¿Por qué te buscan?</p></div></li>
           <li><span className="ps-process-index">02</span><div><h3>Entendemos</h3><p>¿Qué te diferencia? ¿Qué merece protagonismo? ¿Qué percepción quieres elevar?</p></div></li>
           <li><span className="ps-process-index">03</span><div><h3>Diseñamos</h3><p>Identidad. Jerarquía. Contenido. Experiencia.</p></div></li>
         </ol>
-        <div className="professional-services-video-frame" aria-label="Tratamiento visual reservado para el futuro video de presentación de Jota">
-          <div className="professional-services-video-poster"><span className="professional-services-video-overline">UNA CONVERSACIÓN, ANTES QUE UNA PLANTILLA</span><span className="professional-services-poster-name">¿Qué encuentra<br />alguien al buscar<br /><i>tu nombre?</i></span><span className="professional-services-play"><span aria-hidden="true">▶</span> VIDEO DE PRESENTACIÓN · PRÓXIMAMENTE</span><span className="professional-services-video-coordinates">JOTA OCHOA / 60–90 SEGUNDOS</span></div>
-        </div>
-        <p className="professional-services-video-caption">Este espacio recibirá un video breve grabado para esta página.</p>
       </div>
     </div>
   </section>;
@@ -395,6 +456,7 @@ export const ProfessionalServicesLanding: React.FC = () => {
     <main>
       <ProfessionalSpecimen />
       <section className="professional-services-convergence" id="professional-services-convergence" aria-labelledby="professional-services-convergence-title"><div className="professional-services-container"><h2 id="professional-services-convergence-title" className="ps-visually-hidden">Todo lo que ya construiste, conectado en un solo lugar</h2><p className="ps-visually-hidden">Tus canales siguen siendo tuyos. Tu web les da un centro propio.</p><p className="ps-visually-hidden">Google, Instagram, WhatsApp, Agenda, Calendly y Facebook convergen en tu nombre, tu dominio y tu web.</p><ProfessionalServicesMotion /></div></section>
+      <ProfessionalServicesPresentation />
       <ProfessionalServicesBenefits />
       <ProfessionalServicesProcess />
       <section className="professional-services-final-section" id={FORM_ID} tabIndex={-1} aria-labelledby="form-title"><div className="professional-services-container"><ProfessionalServicesForm /></div></section>
