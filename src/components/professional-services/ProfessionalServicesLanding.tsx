@@ -460,6 +460,6 @@ export const ProfessionalServicesLanding: React.FC = () => {
       <ProfessionalServicesBenefits />
       <ProfessionalServicesProcess />
       <section className="professional-services-final-section" id={FORM_ID} tabIndex={-1} aria-labelledby="form-title"><div className="professional-services-container"><ProfessionalServicesForm /></div></section>
-    </main><footer className="professional-services-footer"><div className="professional-services-container"><span>Jota Ochoa · Diseño con nombre propio.</span><a href="mailto:jotaochoa@gmail.com">jotaochoa@gmail.com ↗</a></div></footer>
+    </main><footer className="professional-services-footer"><div className="professional-services-container"><span>Jota Ochoa · Diseño con nombre propio.</span><a href="https://www.agentejota.com/politica-de-privacidad">Política de privacidad</a><a href="mailto:jotaochoa@gmail.com">jotaochoa@gmail.com ↗</a></div></footer>
   </div>;
 };
